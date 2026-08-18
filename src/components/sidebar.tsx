@@ -1,0 +1,3 @@
+import Link from 'next/link';
+export function Sidebar(){return <aside className="sidebar"><div className="brand">GHG Carbon Footprint<small>Scope 1 & Scope 2 Management</small></div><nav className="nav"><div className="nav-title">Overview</div><Link href="/">Dashboard</Link>
+<Link href="/emission-factors">Emission Factors</Link><div className="nav-title">Scope 1</div><Link href="/data/scope-1/lpg-14kg">LPG 14kg</Link><Link href="/data/scope-1/lpg-50kg">LPG 50kg</Link><Link href="/data/scope-1/diesel">Diesel</Link><Link href="/data/scope-1/petrol">Petrol</Link><div className="nav-title">Scope 2</div><Link href="/data/scope-2/electricity">Electricity</Link></nav></aside>}
