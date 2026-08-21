@@ -1,6 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import {
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  Pencil,
+} from 'lucide-react';
 
 type Factor = {
   id: string;
@@ -27,6 +33,11 @@ type Revision = {
   changed_at: string;
 };
 
+type Notice = {
+  text: string;
+  kind: 'ok' | 'error';
+};
+
 export default function EmissionFactorsPage() {
   const [factors, setFactors] = useState<Factor[]>([]);
   const [scope, setScope] = useState('All');
@@ -34,7 +45,7 @@ export default function EmissionFactorsPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Factor | null>(null);
   const [revisions, setRevisions] = useState<Revision[]>([]);
-  const [message, setMessage] = useState('');
+  const [notice, setNotice] = useState<Notice | null>(null);
 
   async function loadFactors() {
     setLoading(true);
@@ -49,11 +60,13 @@ export default function EmissionFactorsPage() {
 
       setFactors(data.data || []);
     } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : 'Failed to load emission factors'
-      );
+      setNotice({
+        text:
+          error instanceof Error
+            ? error.message
+            : 'Failed to load emission factors',
+        kind: 'error',
+      });
     } finally {
       setLoading(false);
     }
@@ -83,7 +96,7 @@ export default function EmissionFactorsPage() {
 
   function startEdit(factor: Factor) {
     setEditing(factor);
-    setMessage('');
+    setNotice(null);
     loadRevisions(factor.id);
   }
 
@@ -106,6 +119,16 @@ export default function EmissionFactorsPage() {
     (a, b) => b - a
   );
 
+  const scopeBadge = (scopeName: string) => (
+    <span
+      className={`badge ${
+        scopeName === 'Scope 1' ? 'badge-orange' : 'badge-blue'
+      }`}
+    >
+      {scopeName}
+    </span>
+  );
+
   return (
     <>
       <div className="topbar">
@@ -118,18 +141,32 @@ export default function EmissionFactorsPage() {
         </div>
       </div>
 
+      {notice && (
+        <div
+          className={`alert ${notice.kind === 'ok' ? 'alert-ok' : 'alert-error'}`}
+        >
+          {notice.kind === 'ok' ? (
+            <CheckCircle2 size={15} />
+          ) : (
+            <AlertCircle size={15} />
+          )}
+          {notice.text}
+        </div>
+      )}
+
       <section className="card">
         <div className="toolbar">
-          <select
-            className="select"
-            style={{ width: 180 }}
-            value={scope}
-            onChange={(e) => setScope(e.target.value)}
-          >
-            <option>All</option>
-            <option>Scope 1</option>
-            <option>Scope 2</option>
-          </select>
+          <div className="segmented">
+            {['All', 'Scope 1', 'Scope 2'].map((option) => (
+              <button
+                key={option}
+                className={scope === option ? 'active' : ''}
+                onClick={() => setScope(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
 
           <select
             className="select"
@@ -149,6 +186,7 @@ export default function EmissionFactorsPage() {
         <div className="section-head">
           <div>
             <div className="section-title">
+              <span className="dot dot-green" />
               Emission factor register
             </div>
             <div className="muted">
@@ -156,21 +194,6 @@ export default function EmissionFactorsPage() {
             </div>
           </div>
         </div>
-
-        {message && (
-          <div
-            style={{
-              padding: 10,
-              marginBottom: 12,
-              borderRadius: 8,
-              background: '#fff0ee',
-              color: 'var(--danger)',
-              fontSize: 12,
-            }}
-          >
-            {message}
-          </div>
-        )}
 
         {loading ? (
           <div className="muted">Loading...</div>
@@ -192,18 +215,15 @@ export default function EmissionFactorsPage() {
               <tbody>
                 {filtered.map((factor) => (
                   <tr key={factor.id}>
-                    <td>{factor.scope}</td>
+                    <td>{scopeBadge(factor.scope)}</td>
                     <td>
                       <strong>{factor.name}</strong>
                     </td>
                     <td>{factor.year}</td>
                     <td className="num">
-                      {Number(factor.factor).toLocaleString(
-                        undefined,
-                        {
-                          maximumFractionDigits: 6,
-                        }
-                      )}
+                      {Number(factor.factor).toLocaleString(undefined, {
+                        maximumFractionDigits: 6,
+                      })}
                     </td>
                     <td>{factor.factor_unit}</td>
                     <td>{factor.source}</td>
@@ -212,7 +232,16 @@ export default function EmissionFactorsPage() {
                         className="btn secondary"
                         onClick={() => startEdit(factor)}
                       >
-                        Edit
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                          }}
+                        >
+                          <Pencil size={12} />
+                          Edit
+                        </span>
                       </button>
                     </td>
                   </tr>
@@ -224,12 +253,10 @@ export default function EmissionFactorsPage() {
       </section>
 
       {editing && (
-        <section className="section card">
+        <section className="section card accent-top">
           <div className="section-head">
             <div>
-              <div className="section-title">
-                Edit emission factor
-              </div>
+              <div className="section-title">Edit emission factor</div>
               <div className="muted">
                 {editing.name} · {editing.year}
               </div>
@@ -247,12 +274,16 @@ export default function EmissionFactorsPage() {
             factor={editing}
             onSaved={async () => {
               await loadFactors();
-              setMessage('Emission factor updated successfully.');
+              setNotice({
+                text: 'Emission factor updated successfully.',
+                kind: 'ok',
+              });
             }}
           />
 
           <div className="section">
             <div className="section-title">
+              <span className="dot dot-neutral" />
               Revision history
             </div>
 
@@ -270,8 +301,7 @@ export default function EmissionFactorsPage() {
                   <thead>
                     <tr>
                       <th>Date</th>
-                      <th>Old</th>
-                      <th>New</th>
+                      <th>Change</th>
                       <th>Reason</th>
                       <th>Changed by</th>
                     </tr>
@@ -285,18 +315,30 @@ export default function EmissionFactorsPage() {
                             revision.changed_at
                           ).toLocaleString()}
                         </td>
+
                         <td>
-                          {revision.old_factor}{' '}
-                          {revision.old_factor_unit}
+                          <span className="muted">
+                            {revision.old_factor}{' '}
+                            {revision.old_factor_unit}
+                          </span>
+                          <ArrowRight
+                            size={12}
+                            style={{
+                              display: 'inline-block',
+                              margin: '0 6px',
+                              verticalAlign: -2,
+                              color: 'var(--muted)',
+                            }}
+                          />
+                          <strong>
+                            {revision.new_factor}{' '}
+                            {revision.new_factor_unit}
+                          </strong>
                         </td>
-                        <td>
-                          {revision.new_factor}{' '}
-                          {revision.new_factor_unit}
-                        </td>
+
                         <td>{revision.reason}</td>
-                        <td>
-                          {revision.changed_by || '—'}
-                        </td>
+
+                        <td>{revision.changed_by || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -354,9 +396,7 @@ function FactorEditor({
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.error || 'Failed to update factor'
-        );
+        throw new Error(data.error || 'Failed to update factor');
       }
 
       setReason('');
@@ -375,16 +415,8 @@ function FactorEditor({
   return (
     <>
       {error && (
-        <div
-          style={{
-            padding: 10,
-            marginBottom: 12,
-            borderRadius: 8,
-            background: '#fff0ee',
-            color: 'var(--danger)',
-            fontSize: 12,
-          }}
-        >
+        <div className="alert alert-error">
+          <AlertCircle size={15} />
           {error}
         </div>
       )}

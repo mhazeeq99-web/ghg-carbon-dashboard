@@ -1,5 +1,8 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+import { niceCeil, seriesColor, formatCompact } from '@/lib/chart';
+
 type Series = {
   label: string;
   values: (number | null)[];
@@ -7,7 +10,7 @@ type Series = {
 
 type LineChartProps = {
   series?: Series[];
-  values?: number[];
+  values?: (number | null)[];
   label?: string;
   labels?: string[];
   height?: number;
@@ -18,6 +21,32 @@ const months = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
+type Point = { x: number; y: number };
+
+/** Catmull-Rom → cubic Bezier, so lines curve smoothly through points. */
+function smoothPath(points: Point[]) {
+  if (points.length === 0) return '';
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+
+  let d = `M ${points[0].x} ${points[0].y}`;
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(0, i - 1)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(points.length - 1, i + 2)];
+
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+
+    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
+  }
+
+  return d;
+}
+
 export function LineChart({
   series,
   values,
@@ -25,32 +54,36 @@ export function LineChart({
   labels,
   height = 300,
 }: LineChartProps) {
+  const [hover, setHover] = useState<number | null>(null);
+
   const chartSeries: Series[] =
     series ??
     (values
-      ? [
-          {
-            label: label ?? '',
-            values,
-          },
-        ]
+      ? [{ label: label ?? '', values }]
       : []);
 
   const axisLabels = labels ?? months;
   const pointCount = axisLabels.length;
 
-  const allValues = chartSeries.flatMap((item) =>
-    item.values.filter((value): value is number => value !== null)
+  const allValues = useMemo(
+    () =>
+      chartSeries.flatMap((item) =>
+        item.values.filter(
+          (value): value is number => value !== null
+        )
+      ),
+    [chartSeries]
   );
 
-  const max = Math.max(...allValues, 1);
+  const rawMax = Math.max(...allValues, 0);
+  const max = niceCeil(rawMax);
   const min = 0;
 
   const width = 1000;
-  const left = 70;
-  const right = 30;
-  const top = 30;
-  const bottom = 50;
+  const left = 58;
+  const right = 18;
+  const top = 26;
+  const bottom = 6;
 
   const chartWidth = width - left - right;
   const chartHeight = height - top - bottom;
@@ -76,177 +109,316 @@ export function LineChart({
       }
     });
 
-    if (current.length > 0) {
-      segments.push(current);
-    }
+    if (current.length > 0) segments.push(current);
 
     return segments;
   }
 
-  function createPath(seriesValues: (number | null)[], indexes: number[]) {
-    return indexes
-      .map((index, pointIndex) => {
-        const value = seriesValues[index]!;
-        return `${pointIndex === 0 ? 'M' : 'L'} ${x(index)} ${y(value)}`;
-      })
-      .join(' ');
+  const isEmpty = allValues.length === 0;
+
+  const hoverValues =
+    hover !== null
+      ? chartSeries.map((item) => item.values[hover] ?? null)
+      : [];
+
+  const topmostHoverY =
+    hover !== null && hoverValues.some((v) => v !== null)
+      ? Math.min(
+          ...hoverValues
+            .filter((v): v is number => v !== null)
+            .map((v) => y(v))
+        )
+      : null;
+
+  const tooltipTop =
+    topmostHoverY !== null ? Math.max(8, topmostHoverY - 64) : 8;
+
+  if (isEmpty) {
+    return (
+      <div className="chart-empty" style={{ height }}>
+        <svg
+          width="34"
+          height="34"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 3v18h18" />
+          <path d="M7 14l3-4 3 3 4-6" />
+        </svg>
+        No data available for this period
+      </div>
+    );
   }
-
-  function createAreaPath(seriesValues: (number | null)[], indexes: number[]) {
-    if (indexes.length === 0) return '';
-    
-    const path = createPath(seriesValues, indexes);
-    const firstIndex = indexes[0];
-    const lastIndex = indexes[indexes.length - 1];
-    
-    return `${path} L ${x(lastIndex)} ${top + chartHeight} L ${x(firstIndex)} ${top + chartHeight} Z`;
-  }
-
-  const colors = [
-    '#0b6b4f',
-    '#2563eb',
-    '#9333ea',
-    '#ea580c',
-    '#dc2626',
-    '#0891b2',
-  ];
-
-  const formatValue = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
-    }
-    if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K`;
-    }
-    return value.toFixed(0);
-  };
 
   return (
     <div className="chart-container">
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="none"
+      <div
         style={{
-          width: '100%',
-          height: `${height}px`,
-          overflow: 'visible',
+          position: 'relative',
+          height: height + 24,
         }}
       >
-        {/* Grid lines */}
-        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-          const gridY = top + chartHeight * (1 - ratio);
-          const gridValue = max * ratio;
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          preserveAspectRatio="none"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height,
+            overflow: 'visible',
+          }}
+        >
+          <defs>
+            {chartSeries.map((item, seriesIndex) => {
+              const color = seriesColor(item.label, seriesIndex);
+              const id = `grad-${seriesIndex}-${item.label.replace(
+                /[^a-zA-Z0-9]/g,
+                '-'
+              )}`;
 
-          return (
-            <g key={ratio}>
+              return (
+                <linearGradient key={id} id={id} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={color} stopOpacity="0.16" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0" />
+                </linearGradient>
+              );
+            })}
+          </defs>
+
+          {/* Grid lines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+            const gridY = top + chartHeight * (1 - ratio);
+            const gridValue = max * ratio;
+
+            return (
               <line
+                key={ratio}
                 x1={left}
                 x2={width - right}
                 y1={gridY}
                 y2={gridY}
-                stroke="#e5e7eb"
+                stroke={ratio === 1 ? '#c9d2ce' : '#e5e8ec'}
                 strokeWidth="1"
-                strokeDasharray={ratio === 1 ? '0' : '4,4'}
+                strokeDasharray={ratio === 1 ? '0' : '3,4'}
               />
-              <text
-                x={left - 12}
-                y={gridY + 4}
-                fontSize="11"
-                fill="#6b7280"
-                textAnchor="end"
-                fontWeight="500"
-              >
-                {formatValue(gridValue)}
-              </text>
-            </g>
-          );
-        })}
+            );
+          })}
 
-        {/* Series */}
-        {chartSeries.map((item, seriesIndex) => {
-          const color = colors[seriesIndex % colors.length];
-          const segments = createSegments(item.values);
+          {/* Baseline */}
+          <line
+            x1={left}
+            x2={width - right}
+            y1={top + chartHeight}
+            y2={top + chartHeight}
+            stroke="#c9d2ce"
+            strokeWidth="1"
+          />
+
+          {/* Series */}
+          {chartSeries.map((item, seriesIndex) => {
+            const color = seriesColor(item.label, seriesIndex);
+            const gradientId = `grad-${seriesIndex}-${item.label.replace(
+              /[^a-zA-Z0-9]/g,
+              '-'
+            )}`;
+            const segments = createSegments(item.values);
+
+            return (
+              <g key={item.label}>
+                {/* Area fill */}
+                {segments.map((indexes, segmentIndex) => {
+                  if (indexes.length === 0) return null;
+
+                  const linePath = smoothPath(
+                    indexes.map((i) => ({
+                      x: x(i),
+                      y: y(item.values[i]!),
+                    }))
+                  );
+
+                  const areaPath = `${linePath} L ${x(
+                    indexes[indexes.length - 1]
+                  )} ${top + chartHeight} L ${x(indexes[0])} ${
+                    top + chartHeight
+                  } Z`;
+
+                  return (
+                    <path
+                      key={`area-${segmentIndex}`}
+                      d={areaPath}
+                      fill={`url(#${gradientId})`}
+                    />
+                  );
+                })}
+
+                {/* Line */}
+                {segments.map((indexes, segmentIndex) => (
+                  <path
+                    key={`line-${segmentIndex}`}
+                    d={smoothPath(
+                      indexes.map((i) => ({
+                        x: x(i),
+                        y: y(item.values[i]!),
+                      }))
+                    )}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                ))}
+
+                {/* Data points */}
+                {item.values.map((value, index) => {
+                  if (value === null) return null;
+
+                  const active = hover === index;
+
+                  return (
+                    <circle
+                      key={`dot-${index}`}
+                      cx={x(index)}
+                      cy={y(value)}
+                      r={active ? 5.5 : 3}
+                      fill={active ? color : '#ffffff'}
+                      stroke={color}
+                      strokeWidth={active ? 2.5 : 1.8}
+                    />
+                  );
+                })}
+              </g>
+            );
+          })}
+
+          {/* Crosshair */}
+          {hover !== null && (
+            <line
+              x1={x(hover)}
+              x2={x(hover)}
+              y1={top}
+              y2={top + chartHeight}
+              stroke="#98a2b3"
+              strokeWidth="1"
+              strokeDasharray="3,3"
+              opacity="0.8"
+            />
+          )}
+
+          {/* Hit area */}
+          <rect
+            x={left}
+            y={top}
+            width={chartWidth}
+            height={chartHeight}
+            fill="transparent"
+            style={{ pointerEvents: 'all', cursor: 'crosshair' }}
+            onMouseMove={(event) => {
+              const rect = event.currentTarget.getBoundingClientRect();
+              const ratio = (event.clientX - rect.left) / rect.width;
+              const index = Math.round(ratio * (pointCount - 1));
+              setHover(Math.min(Math.max(index, 0), pointCount - 1));
+            }}
+            onMouseLeave={() => setHover(null)}
+          />
+        </svg>
+
+        {/* Y-axis labels (HTML, crisp) */}
+        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const labelY = top + chartHeight * (1 - ratio);
 
           return (
-            <g key={item.label}>
-              {/* Area fill */}
-              {segments.map((indexes, segmentIndex) => (
-                <path
-                  key={`area-${segmentIndex}`}
-                  d={createAreaPath(item.values, indexes)}
-                  fill={color}
-                  opacity="0.05"
-                />
-              ))}
-
-              {/* Line */}
-              {segments.map((indexes, segmentIndex) => (
-                <path
-                  key={`line-${segmentIndex}`}
-                  d={createPath(item.values, indexes)}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              ))}
-
-              {/* Data points */}
-              {item.values.map((value, index) => {
-                if (value === null) return null;
-
-                return (
-                  <circle
-                    key={`dot-${index}`}
-                    cx={x(index)}
-                    cy={y(value)}
-                    r="4"
-                    fill="white"
-                    stroke={color}
-                    strokeWidth="2"
-                  />
-                );
-              })}
-            </g>
+            <div
+              key={`y-${ratio}`}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: labelY - 7,
+                width: left - 14,
+                textAlign: 'right',
+                fontSize: 10.5,
+                color: '#667085',
+                fontWeight: 500,
+                fontVariantNumeric: 'tabular-nums',
+                lineHeight: 1,
+              }}
+            >
+              {formatCompact(max * ratio)}
+            </div>
           );
         })}
 
-        {/* X-axis labels */}
-        {axisLabels.map((axisLabel, index) => (
-          <text
-            key={`${axisLabel}-${index}`}
-            x={x(index)}
-            y={height - 15}
-            fontSize="11"
-            fill="#6b7280"
-            textAnchor="middle"
-            fontWeight="500"
+        {/* X-axis labels (HTML, crisp) */}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(left / width) * 100}%`,
+            right: `${(right / width) * 100}%`,
+            top: height,
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: 10.5,
+            color: '#667085',
+            fontWeight: 500,
+            paddingTop: 8,
+          }}
+        >
+          {axisLabels.map((axisLabel, index) => (
+            <span key={`${axisLabel}-${index}`}>{axisLabel}</span>
+          ))}
+        </div>
+
+        {/* Tooltip */}
+        {hover !== null && (
+          <div
+            className="chart-tooltip"
+            style={{
+              left: `clamp(84px, ${(x(hover) / width) * 100}%, calc(100% - 84px))`,
+              top: tooltipTop,
+              transform: 'translateX(-50%)',
+            }}
           >
-            {axisLabel}
-          </text>
-        ))}
-      </svg>
+            <div className="tt-title">{axisLabels[hover]}</div>
+
+            {chartSeries.map((item, seriesIndex) => {
+              const value = item.values[hover];
+
+              if (value === null) return null;
+
+              return (
+                <div className="tt-row" key={item.label}>
+                  <span
+                    className="tt-dot"
+                    style={{
+                      background: seriesColor(item.label, seriesIndex),
+                    }}
+                  />
+                  <span className="tt-name">{item.label}</span>
+                  <span className="tt-val">
+                    {value.toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Legend */}
       {chartSeries.length > 0 && (
-        <div
-          className="chart-legend"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '16px',
-            marginTop: '12px',
-            justifyContent: 'center',
-          }}
-        >
+        <div className="chart-legend">
           {chartSeries.map((item, index) => (
             <span key={item.label} className="legend-item">
               <i
                 className="legend-color"
-                style={{
-                  background: colors[index % colors.length],
-                }}
+                style={{ background: seriesColor(item.label, index) }}
               />
               {item.label}
             </span>

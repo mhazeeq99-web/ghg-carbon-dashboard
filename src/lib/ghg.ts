@@ -5,7 +5,7 @@ export const parameters=[
  {scope:'Scope 1',slug:'lpg-50kg',name:'LPG 50kg',unit:'kg',factor:0.003},
  {scope:'Scope 1',slug:'diesel',name:'Diesel',unit:'L',factor:2.68},
  {scope:'Scope 1',slug:'petrol',name:'Petrol',unit:'L',factor:2.31},
- {scope:'Scope 2',slug:'electricity',name:'Electricity',unit:'kWh',factor:0.101683}
+ {scope:'Scope 2',slug:'electricity',name:'Electricity',unit:'kWh',factor:0.101683},{scope:'Scope 2',slug:'solar',name:'Solar',unit:'kWh',factor:0}
 ];
 export const demo={
  diesel:[2998.12,2567.99,2574.14,3022.72,3117.61,2816.58,3248.36,0,0,0,0,0],

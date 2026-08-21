@@ -1,0 +1,579 @@
+{
+  "fetched_at": "2026-08-21T04:14:01.906Z",
+  "plants": {
+    "KIP": {
+      "name": "Percetakan Tenaga Sdn Bhd (Lot 1238)",
+      "ps_id": "1162759"
+    },
+    "Tago": {
+      "name": "Percetakan Tenaga Sdn Bhd (Jln Tago)",
+      "ps_id": "1160479"
+    }
+  },
+  "records": [
+    {
+      "location": "KIP",
+      "year": 2022,
+      "month": 9,
+      "quantity_kwh": 67
+    },
+    {
+      "location": "KIP",
+      "year": 2022,
+      "month": 10,
+      "quantity_kwh": 14137.6
+    },
+    {
+      "location": "KIP",
+      "year": 2022,
+      "month": 11,
+      "quantity_kwh": 31896.5
+    },
+    {
+      "location": "KIP",
+      "year": 2022,
+      "month": 12,
+      "quantity_kwh": 32479.9
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 3,
+      "quantity_kwh": 36780.4
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 4,
+      "quantity_kwh": 48155.5
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 5,
+      "quantity_kwh": 53531.8
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 6,
+      "quantity_kwh": 48178.3
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 7,
+      "quantity_kwh": 44358.3
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 8,
+      "quantity_kwh": 44169.9
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 9,
+      "quantity_kwh": 45338.5
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 10,
+      "quantity_kwh": 48188.6
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 11,
+      "quantity_kwh": 41595.3
+    },
+    {
+      "location": "KIP",
+      "year": 2023,
+      "month": 12,
+      "quantity_kwh": 39706.3
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 1,
+      "quantity_kwh": 41965.2
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 2,
+      "quantity_kwh": 48124.7
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 3,
+      "quantity_kwh": 50631.1
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 4,
+      "quantity_kwh": 45619.2
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 5,
+      "quantity_kwh": 43866.2
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 6,
+      "quantity_kwh": 43531.9
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 7,
+      "quantity_kwh": 46131.1
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 8,
+      "quantity_kwh": 43678.9
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 9,
+      "quantity_kwh": 44309.4
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 10,
+      "quantity_kwh": 46050.3
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 11,
+      "quantity_kwh": 38990.5
+    },
+    {
+      "location": "KIP",
+      "year": 2024,
+      "month": 12,
+      "quantity_kwh": 36519.1
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 1,
+      "quantity_kwh": 40699.7
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 2,
+      "quantity_kwh": 43044.3
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 3,
+      "quantity_kwh": 45272.8
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 4,
+      "quantity_kwh": 47233.1
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 5,
+      "quantity_kwh": 44009.8
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 6,
+      "quantity_kwh": 43482.6
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 7,
+      "quantity_kwh": 42722.3
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 8,
+      "quantity_kwh": 45746.5
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 9,
+      "quantity_kwh": 44974.4
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 10,
+      "quantity_kwh": 48613.3
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 11,
+      "quantity_kwh": 38499.6
+    },
+    {
+      "location": "KIP",
+      "year": 2025,
+      "month": 12,
+      "quantity_kwh": 39780.6
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 1,
+      "quantity_kwh": 41565
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 2,
+      "quantity_kwh": 43662.3
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 3,
+      "quantity_kwh": 52268.5
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 4,
+      "quantity_kwh": 44383.5
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 5,
+      "quantity_kwh": 44931.7
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 6,
+      "quantity_kwh": 41410.8
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 7,
+      "quantity_kwh": 40828.4
+    },
+    {
+      "location": "KIP",
+      "year": 2026,
+      "month": 8,
+      "quantity_kwh": 28469.9
+    },
+    {
+      "location": "Tago",
+      "year": 2022,
+      "month": 8,
+      "quantity_kwh": 58.6
+    },
+    {
+      "location": "Tago",
+      "year": 2022,
+      "month": 10,
+      "quantity_kwh": 17744.2
+    },
+    {
+      "location": "Tago",
+      "year": 2022,
+      "month": 11,
+      "quantity_kwh": 41914.2
+    },
+    {
+      "location": "Tago",
+      "year": 2022,
+      "month": 12,
+      "quantity_kwh": 40752.1
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 1,
+      "quantity_kwh": 43054
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 2,
+      "quantity_kwh": 40810
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 3,
+      "quantity_kwh": 49841.2
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 4,
+      "quantity_kwh": 49247.8
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 5,
+      "quantity_kwh": 53892.7
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 6,
+      "quantity_kwh": 49060
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 7,
+      "quantity_kwh": 44671.3
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 8,
+      "quantity_kwh": 44592.3
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 9,
+      "quantity_kwh": 46138.6
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 10,
+      "quantity_kwh": 49180.5
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 11,
+      "quantity_kwh": 41489.3
+    },
+    {
+      "location": "Tago",
+      "year": 2023,
+      "month": 12,
+      "quantity_kwh": 28042
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 1,
+      "quantity_kwh": 32258
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 2,
+      "quantity_kwh": 46197.8
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 3,
+      "quantity_kwh": 50368.6
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 4,
+      "quantity_kwh": 8277.7
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 5,
+      "quantity_kwh": 36447.7
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 6,
+      "quantity_kwh": 43648.1
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 7,
+      "quantity_kwh": 47154.7
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 8,
+      "quantity_kwh": 44912.4
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 9,
+      "quantity_kwh": 45228.7
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 10,
+      "quantity_kwh": 46567.6
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 11,
+      "quantity_kwh": 39776.5
+    },
+    {
+      "location": "Tago",
+      "year": 2024,
+      "month": 12,
+      "quantity_kwh": 36724.6
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 1,
+      "quantity_kwh": 41747.8
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 2,
+      "quantity_kwh": 43601.5
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 3,
+      "quantity_kwh": 46339.2
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 4,
+      "quantity_kwh": 48194.2
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 5,
+      "quantity_kwh": 44824.4
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 6,
+      "quantity_kwh": 44069.9
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 7,
+      "quantity_kwh": 44119.5
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 8,
+      "quantity_kwh": 47729.9
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 9,
+      "quantity_kwh": 44799.8
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 10,
+      "quantity_kwh": 47873.8
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 11,
+      "quantity_kwh": 37819.9
+    },
+    {
+      "location": "Tago",
+      "year": 2025,
+      "month": 12,
+      "quantity_kwh": 39144.8
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 1,
+      "quantity_kwh": 40594.8
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 2,
+      "quantity_kwh": 43185.2
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 3,
+      "quantity_kwh": 51329.7
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 4,
+      "quantity_kwh": 44538.2
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 5,
+      "quantity_kwh": 45545
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 6,
+      "quantity_kwh": 42012.4
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 7,
+      "quantity_kwh": 40994.2
+    },
+    {
+      "location": "Tago",
+      "year": 2026,
+      "month": 8,
+      "quantity_kwh": 30457
+    }
+  ]
+}
