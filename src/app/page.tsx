@@ -11,10 +11,9 @@ import {
   ChevronRight,
   TrendingUp,
   TrendingDown,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
 import { LineChart } from '@/components/line-chart';
+import { ChartCard } from '@/components/chart-card';
 import { BarChart } from '@/components/bar-chart';
 import { parameters, years } from '@/lib/ghg';
 
@@ -293,123 +292,52 @@ export default function Dashboard() {
       </div>
 
       {/* ======================================================
-          CHART YEAR FILTER
-          ====================================================== */}
-
-      <div className="section card">
-        <div className="section-head" style={{ marginBottom: 10 }}>
-          <div className="section-title">
-            <span className="dot dot-neutral" />
-            Chart years
-          </div>
-
-          <div className="muted">
-            Toggle which years appear on the charts below
-          </div>
-        </div>
-
-        <div className="year-filter">
-          <span className="year-filter-label">Show:</span>
-
-          {years.map((y) => {
-            const hidden = hiddenYears.has(y);
-
-            return (
-              <button
-                key={y}
-                className={`year-chip ${hidden ? 'off' : 'on'}`}
-                onClick={() => toggleYear(y)}
-                title={hidden ? `Show ${y}` : `Hide ${y}`}
-              >
-                {hidden ? (
-                  <EyeOff size={12} />
-                ) : (
-                  <Eye size={12} />
-                )}
-                {y}
-              </button>
-            );
-          })}
-
-          {hiddenYears.size > 0 && (
-            <button
-              className="year-chip reset"
-              onClick={() => setHiddenYears(new Set())}
-            >
-              Reset
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* ======================================================
           SCOPE 1 GRAPH
           ====================================================== */}
 
-      <section className="section card">
-        <div className="section-head">
-          <div>
-            <div className="section-title">
-              <span className="dot dot-orange" />
-              Scope 1
-            </div>
-
-            <div className="muted">
-              Monthly GHG emissions · 2022–2026
-            </div>
-          </div>
-        </div>
-
+      <ChartCard
+        title={<>Scope 1</>}
+        years={years}
+        hiddenYears={hiddenYears}
+        onToggleYear={toggleYear}
+        onResetYears={() => setHiddenYears(new Set())}
+      >
         {loading ? (
           <div className="skeleton skeleton-chart" />
         ) : (
           <LineChart series={scope1Series} height={320} xLabel="Month" yLabel="tCO₂e" />
         )}
-      </section>
+      </ChartCard>
 
       {/* ======================================================
           SCOPE 2 GRAPH
           ====================================================== */}
 
-      <section className="section card">
-        <div className="section-head">
-          <div>
-            <div className="section-title">
-              <span className="dot dot-blue" />
-              Scope 2
-            </div>
-
-            <div className="muted">
-              Monthly GHG emissions · 2022–2026
-            </div>
-          </div>
-        </div>
-
+      <ChartCard
+        title={<>Scope 2</>}
+        years={years}
+        hiddenYears={hiddenYears}
+        onToggleYear={toggleYear}
+        onResetYears={() => setHiddenYears(new Set())}
+      >
         {loading ? (
           <div className="skeleton skeleton-chart" />
         ) : (
           <LineChart series={scope2Series} height={320} xLabel="Month" yLabel="tCO₂e" />
         )}
-      </section>
+      </ChartCard>
 
       {/* ======================================================
           ANNUAL COMPARISON (STACKED BAR CHART)
           ====================================================== */}
 
-      <section className="section card">
-        <div className="section-head">
-          <div>
-            <div className="section-title">
-              <span className="dot dot-green" />
-              Annual comparison
-            </div>
-
-            <div className="muted">
-              Scope 1 + Scope 2 · tCO₂e per year
-            </div>
-          </div>
-        </div>
-
+      <ChartCard
+        title={<>Annual comparison</>}
+        years={years}
+        hiddenYears={hiddenYears}
+        onToggleYear={toggleYear}
+        onResetYears={() => setHiddenYears(new Set())}
+      >
         {loading ? (
           <div className="skeleton skeleton-chart" />
         ) : (
@@ -435,7 +363,7 @@ export default function Dashboard() {
             />
           )
         )}
-      </section>
+      </ChartCard>
 
       {/* ======================================================
           PERFORMANCE DATA

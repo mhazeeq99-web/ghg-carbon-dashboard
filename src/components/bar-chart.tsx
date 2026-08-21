@@ -74,7 +74,7 @@ export function BarChart({
   const min = 0;
 
   const width = 1000;
-  const left = 58;
+  const left = 78;
   const right = 18;
   const top = 32;
   const bottom = 6;
@@ -177,6 +177,16 @@ export function BarChart({
             x1={left}
             x2={width - right}
             y1={top + chartHeight}
+            y2={top + chartHeight}
+            stroke="#c9d2ce"
+            strokeWidth="1"
+          />
+
+          {/* Y-axis line */}
+          <line
+            x1={left}
+            x2={left}
+            y1={top}
             y2={top + chartHeight}
             stroke="#c9d2ce"
             strokeWidth="1"
@@ -332,14 +342,15 @@ export function BarChart({
               style={{
                 position: 'absolute',
                 left: 18,
+                right: `calc(${((width - left) / width) * 100}% + 8px)`,
                 top: labelY - 7,
-                width: left - 14,
                 textAlign: 'right',
                 fontSize: 10.5,
                 color: '#667085',
                 fontWeight: 500,
                 fontVariantNumeric: 'tabular-nums',
                 lineHeight: 1,
+                whiteSpace: 'nowrap',
               }}
             >
               {formatCompact(max * ratio)}

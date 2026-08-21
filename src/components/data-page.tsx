@@ -7,12 +7,11 @@ import {
   Gauge,
   CheckCircle2,
   AlertCircle,
-  Eye,
-  EyeOff,
   RefreshCw,
 } from 'lucide-react';
 import { months, years, parameters } from '@/lib/ghg';
 import { BarChart } from './bar-chart';
+import { ChartCard } from './chart-card';
 
 type ActivityRow = {
   id: string;
@@ -518,53 +517,22 @@ export function DataPage({ slug }: { slug: string }) {
         )}
       </section>
 
-      <section className="section card">
-        <div className="section-head">
-          <div>
-            <div className="section-title">Monthly trend</div>
-
-            <div className="muted">
-              {selectedLocation || '—'} · {parameter.unit} ·
-              compare across years
-            </div>
-          </div>
-        </div>
-
-        <div className="year-filter" style={{ marginBottom: 16 }}>
-          <span className="year-filter-label">Show:</span>
-
-          {years.map((y) => {
-            const hidden = hiddenYears.has(y);
-
-            return (
-              <button
-                key={y}
-                className={`year-chip ${hidden ? 'off' : 'on'}`}
-                onClick={() => toggleYear(y)}
-                title={hidden ? `Show ${y}` : `Hide ${y}`}
-              >
-                {hidden ? (
-                  <EyeOff size={12} />
-                ) : (
-                  <Eye size={12} />
-                )}
-                {y}
-              </button>
-            );
-          })}
-
-          {hiddenYears.size > 0 && (
-            <button
-              className="year-chip reset"
-              onClick={() => setHiddenYears(new Set())}
-            >
-              Reset
-            </button>
-          )}
-        </div>
-
+      <ChartCard
+        title={
+          <>
+            {parameter.name}
+            {locations.length > 1 && selectedLocation
+              ? ` ${selectedLocation}`
+              : ''}
+          </>
+        }
+        years={years}
+        hiddenYears={hiddenYears}
+        onToggleYear={toggleYear}
+        onResetYears={() => setHiddenYears(new Set())}
+      >
         <BarChart labels={months} series={visibleSeries} height={320} xLabel="Month" yLabel={parameter.unit} />
-      </section>
+      </ChartCard>
 
       <section className="section card">
         <div className="section-head">

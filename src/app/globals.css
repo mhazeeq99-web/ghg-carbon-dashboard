@@ -299,6 +299,25 @@ a {
   gap: 8px;
 }
 
+/* Centered chart title, directly above a chart */
+.chart-head {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.chart-head .section-title {
+  justify-content: center;
+}
+
+.chart-head .muted {
+  margin-top: 4px;
+}
+
+/* Year filter row inside a chart card */
+.chart-filter {
+  margin-bottom: 14px;
+}
+
 .dot {
   width: 9px;
   height: 9px;
