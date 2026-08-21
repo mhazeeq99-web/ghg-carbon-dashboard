@@ -16,6 +16,10 @@ type BarChartProps = {
   height?: number;
   /** Stack the series into one bar per group (default: side-by-side). */
   stacked?: boolean;
+  /** Label under the x-axis, e.g. "Year". */
+  xLabel?: string;
+  /** Label along the y-axis, e.g. "tCO₂e". */
+  yLabel?: string;
 };
 
 /** Rounded-top bar path. */
@@ -38,6 +42,8 @@ export function BarChart({
   series,
   height = 300,
   stacked = false,
+  xLabel,
+  yLabel,
 }: BarChartProps) {
   const [hover, setHover] = useState<number | null>(null);
 
@@ -132,7 +138,7 @@ export function BarChart({
       <div
         style={{
           position: 'relative',
-          height: height + 24,
+          height: height + 40,
         }}
       >
         <svg
@@ -324,7 +330,7 @@ export function BarChart({
               key={`y-${ratio}`}
               style={{
                 position: 'absolute',
-                left: 0,
+                left: 18,
                 top: labelY - 7,
                 width: left - 14,
                 textAlign: 'right',
@@ -359,6 +365,54 @@ export function BarChart({
             <span key={`${label}-${index}`}>{label}</span>
           ))}
         </div>
+
+        {/* Y-axis label */}
+        {yLabel && (
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 24,
+              width: 18,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span
+              style={{
+                transform: 'rotate(-90deg)',
+                whiteSpace: 'nowrap',
+                fontSize: 10,
+                fontWeight: 600,
+                color: '#667085',
+                letterSpacing: '0.4px',
+              }}
+            >
+              {yLabel}
+            </span>
+          </div>
+        )}
+
+        {/* X-axis label */}
+        {xLabel && (
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: height + 26,
+              textAlign: 'center',
+              fontSize: 10,
+              fontWeight: 600,
+              color: '#667085',
+              letterSpacing: '0.5px',
+            }}
+          >
+            {xLabel}
+          </div>
+        )}
 
         {/* Tooltip */}
         {hover !== null && (

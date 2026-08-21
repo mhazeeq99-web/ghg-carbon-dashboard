@@ -563,7 +563,7 @@ export function DataPage({ slug }: { slug: string }) {
           )}
         </div>
 
-        <BarChart labels={months} series={visibleSeries} height={320} />
+        <BarChart labels={months} series={visibleSeries} height={320} xLabel="Month" yLabel={parameter.unit} />
       </section>
 
       <section className="section card">

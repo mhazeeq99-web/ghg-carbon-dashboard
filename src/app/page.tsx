@@ -366,7 +366,7 @@ export default function Dashboard() {
         {loading ? (
           <div className="skeleton skeleton-chart" />
         ) : (
-          <LineChart series={scope1Series} height={320} />
+          <LineChart series={scope1Series} height={320} xLabel="Month" yLabel="tCO₂e" />
         )}
       </section>
 
@@ -391,7 +391,7 @@ export default function Dashboard() {
         {loading ? (
           <div className="skeleton skeleton-chart" />
         ) : (
-          <LineChart series={scope2Series} height={320} />
+          <LineChart series={scope2Series} height={320} xLabel="Month" yLabel="tCO₂e" />
         )}
       </section>
 
@@ -433,6 +433,8 @@ export default function Dashboard() {
               ]}
               height={320}
               stacked
+              xLabel="Year"
+              yLabel="tCO₂e"
             />
           )
         )}
