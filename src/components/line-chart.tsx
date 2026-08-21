@@ -62,11 +62,12 @@ export function LineChart({
 }: LineChartProps) {
   const [hover, setHover] = useState<number | null>(null);
 
-  const chartSeries: Series[] =
-    series ??
-    (values
-      ? [{ label: label ?? '', values }]
-      : []);
+  const chartSeries = useMemo<Series[]>(
+    () =>
+      series ??
+      (values ? [{ label: label ?? '', values }] : []),
+    [series, values, label]
+  );
 
   const axisLabels = labels ?? months;
   const pointCount = axisLabels.length;
@@ -136,6 +137,8 @@ export function LineChart({
         )
       : null;
 
+  const hasHoverValue = hoverValues.some((v) => v !== null);
+
   const tooltipTop =
     topmostHoverY !== null ? Math.max(8, topmostHoverY - 64) : 8;
 
@@ -199,7 +202,6 @@ export function LineChart({
           {/* Grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
             const gridY = top + chartHeight * (1 - ratio);
-            const gridValue = max * ratio;
 
             return (
               <line
@@ -428,7 +430,7 @@ export function LineChart({
         )}
 
         {/* Tooltip */}
-        {hover !== null && (
+        {hover !== null && hasHoverValue && (
           <div
             className="chart-tooltip"
             style={{

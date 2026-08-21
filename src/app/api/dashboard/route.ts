@@ -3,6 +3,29 @@ import { db } from '@/lib/db';
 
 const YEARS = [2022, 2023, 2024, 2025, 2026];
 
+type GroupedItem = {
+  year: number;
+  slug: string;
+  name: string;
+  scope: string;
+  input_unit: string;
+  factor: number | null;
+  factor_unit: string | null;
+  location: string;
+  monthly: (number | null)[];
+};
+
+type PerformanceItem = {
+  slug: string;
+  name: string;
+  scope: string;
+  input_unit: string;
+  factor: number | null;
+  factor_unit: string | null;
+  quantity: number;
+  emissions: number;
+};
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -43,7 +66,7 @@ export async function GET(request: NextRequest) {
      * Key:
      * year + parameter + location
      */
-    const grouped = new Map<string, any>();
+    const grouped = new Map<string, GroupedItem>();
 
     for (const row of result.rows) {
       const key = `${row.year}:${row.slug}:${row.location}`;
@@ -62,7 +85,8 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      grouped.get(key).monthly[Number(row.month) - 1] =
+      const groupedItem = grouped.get(key)!;
+      groupedItem.monthly[Number(row.month) - 1] =
         Number(row.quantity);
     }
 
@@ -203,7 +227,7 @@ export async function GET(request: NextRequest) {
       (item) => item.scope === 'Scope 2'
     );
 
-    const sumEmission = (sourceItems: any[]) =>
+    const sumEmission = (sourceItems: GroupedItem[]) =>
       sourceItems.reduce((total, item) => {
         return (
           total +
@@ -239,7 +263,7 @@ export async function GET(request: NextRequest) {
      *
      * Aggregated by parameter.
      */
-    const performanceMap = new Map<string, any>();
+    const performanceMap = new Map<string, PerformanceItem>();
 
     for (const item of selectedItems) {
       const key = item.slug;
@@ -257,7 +281,7 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      const performance = performanceMap.get(key);
+      const performance = performanceMap.get(key)!;
 
       for (const quantity of item.monthly) {
         if (quantity !== null) {

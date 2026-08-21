@@ -58,9 +58,6 @@ export function DataPage({ slug }: { slug: string }) {
   const refreshData = useCallback(async () => {
     if (!parameter) return;
 
-    setLoading(true);
-    setNotice(null);
-
     try {
       const [activityResponse, factorResponse] = await Promise.all([
         fetch(
@@ -83,6 +80,7 @@ export function DataPage({ slug }: { slug: string }) {
 
       const activityRows: ActivityRow[] = activityResult.data ?? [];
 
+      setNotice(null);
       setAllRows(activityRows);
 
       const uniqueLocations = Array.from(
@@ -116,9 +114,11 @@ export function DataPage({ slug }: { slug: string }) {
     } finally {
       setLoading(false);
     }
-  }, [slug, year]);
+  }, [slug, year, location, parameter]);
 
   useEffect(() => {
+    // Fetch-on-mount: refreshData only calls setState after awaited fetches.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshData();
   }, [refreshData]);
 
@@ -139,12 +139,12 @@ export function DataPage({ slug }: { slug: string }) {
         throw new Error(result.error || 'Sync failed');
       }
 
+      await refreshData();
+
       setNotice({
         text: `Synced ${result.records_fetched} monthly records (${result.records_upserted} upserted).`,
         kind: 'ok',
       });
-
-      await refreshData();
     } catch (error) {
       console.error(error);
       setNotice({

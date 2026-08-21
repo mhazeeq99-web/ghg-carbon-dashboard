@@ -117,8 +117,10 @@ export function BarChart({
   const hoverValues =
     hover !== null ? series.map((item) => item.values[hover] ?? null) : [];
 
+  const hasHoverValue = hoverValues.some((v) => v !== null);
+
   const topmostY =
-    hover !== null
+    hover !== null && hasHoverValue
       ? stacked
         ? y(groupTotals[hover] ?? 0)
         : Math.min(
@@ -155,7 +157,6 @@ export function BarChart({
           {/* Grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
             const gridY = top + chartHeight * (1 - ratio);
-            const gridValue = max * ratio;
 
             return (
               <line
@@ -346,25 +347,30 @@ export function BarChart({
           );
         })}
 
-        {/* X-axis labels (HTML, crisp) */}
-        <div
-          style={{
-            position: 'absolute',
-            left: `${(left / width) * 100}%`,
-            right: `${(right / width) * 100}%`,
-            top: height,
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: 10.5,
-            color: '#667085',
-            fontWeight: 500,
-            paddingTop: 8,
-          }}
-        >
-          {labels.map((label, index) => (
-            <span key={`${label}-${index}`}>{label}</span>
-          ))}
-        </div>
+        {/* X-axis labels (HTML, crisp) — one centered under each bar group */}
+        {labels.map((label, index) => {
+          const groupCenterX = left + (index + 0.5) * groupWidth;
+
+          return (
+            <div
+              key={`${label}-${index}`}
+              style={{
+                position: 'absolute',
+                left: `${(groupCenterX / width) * 100}%`,
+                top: height,
+                transform: 'translateX(-50%)',
+                paddingTop: 8,
+                fontSize: 10.5,
+                color: '#667085',
+                fontWeight: 500,
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {label}
+            </div>
+          );
+        })}
 
         {/* Y-axis label */}
         {yLabel && (
@@ -415,7 +421,7 @@ export function BarChart({
         )}
 
         {/* Tooltip */}
-        {hover !== null && (
+        {hover !== null && hasHoverValue && (
           <div
             className="chart-tooltip"
             style={{

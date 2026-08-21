@@ -46,11 +46,11 @@ type DashboardData = {
   year: number;
   scope1: {
     total: number;
-    parameters: any[];
+    parameters: unknown[];
   };
   scope2: {
     total: number;
-    parameters: any[];
+    parameters: unknown[];
   };
   total: number;
 
@@ -168,22 +168,6 @@ export default function Dashboard() {
       maximumFractionDigits: 2,
     });
 
-  const DeltaBadge = () => {
-    if (deltaPct === null || loading || !data) return null;
-
-    const good = deltaPct <= 0;
-
-    return (
-      <span className={`delta ${good ? 'delta-good' : 'delta-bad'}`}>
-        {good ? (
-          <TrendingDown size={12} />
-        ) : (
-          <TrendingUp size={12} />
-        )}
-        {Math.abs(deltaPct).toFixed(1)}% vs {year - 1}
-      </span>
-    );
-  };
 
   return (
     <>
@@ -242,7 +226,20 @@ export default function Dashboard() {
 
           <div className="kpi-bottom">
             <div className="kpi-sub">tCO₂e</div>
-            <DeltaBadge />
+            {deltaPct !== null && !loading && data && (
+  <span
+    className={`delta ${
+      deltaPct <= 0 ? 'delta-good' : 'delta-bad'
+    }`}
+  >
+    {deltaPct <= 0 ? (
+      <TrendingDown size={12} />
+    ) : (
+      <TrendingUp size={12} />
+    )}
+    {Math.abs(deltaPct).toFixed(1)}% vs {year - 1}
+  </span>
+)}
           </div>
         </div>
 

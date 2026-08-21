@@ -48,8 +48,6 @@ export default function EmissionFactorsPage() {
   const [notice, setNotice] = useState<Notice | null>(null);
 
   async function loadFactors() {
-    setLoading(true);
-
     try {
       const res = await fetch('/api/emission-factor');
       const data = await res.json();
@@ -91,6 +89,8 @@ export default function EmissionFactorsPage() {
   }
 
   useEffect(() => {
+    // Fetch-on-mount: loadFactors only calls setState after awaited fetches.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadFactors();
   }, []);
 

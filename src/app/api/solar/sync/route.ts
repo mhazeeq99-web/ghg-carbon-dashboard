@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 /*
@@ -40,7 +40,7 @@ async function call(path: string, data: Record<string, unknown>) {
   return res.json() as Promise<{
     result_code?: string;
     result_msg?: string;
-    result_data?: any;
+    result_data?: Record<string, unknown> | null;
   }>;
 }
 
@@ -51,7 +51,7 @@ type SyncRecord = {
   quantity_kwh: number;
 };
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const account = process.env.ISOLARCLOUD_ACCOUNT;
   const password = process.env.ISOLARCLOUD_PASSWORD;
 
@@ -84,7 +84,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = login.result_data.token as string;
+    const token = (login.result_data?.token as string) ?? null;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: `iSolarCloud login failed: ${login.result_msg ?? "unknown error"}` },
+        { status: 502 }
+      );
+    }
 
     /*
      * 2. Fetch monthly yield per plant / year
@@ -116,7 +123,7 @@ export async function POST(request: NextRequest) {
             continue;
           }
 
-          const rows: any[] = report.result_data?.data ?? [];
+          const rows = ((report.result_data as Record<string, unknown> | null)?.data ?? []) as Record<string, unknown>[];
 
           for (const row of rows) {
             const ts = String(row.time_stamp ?? '');
