@@ -52,7 +52,9 @@ export async function GET(request: NextRequest) {
         ef.factor,
         ef.factor_unit,
         ef.source,
-        ef.year
+        ef.year,
+        p.conversion_factor,
+        p.conversion_unit
       FROM emission_factors ef
       JOIN parameters p
         ON p.id = ef.parameter_id

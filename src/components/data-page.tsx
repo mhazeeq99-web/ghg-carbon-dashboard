@@ -31,6 +31,8 @@ type FactorData = {
   factor_unit: string;
   source: string | null;
   year: number;
+  conversion_factor?: string | number | null;
+  conversion_unit?: string | null;
 };
 
 type Notice = {
@@ -176,6 +178,22 @@ export function DataPage({ slug }: { slug: string }) {
     [allRows, year]
   );
 
+  /*
+   * LPG cylinder parameters store activity in cylinders; convert to kg
+   * (conversion_factor, e.g. 14 kg/cylinder) before computing emissions.
+   */
+  const conversionFactor =
+    factorData &&
+    factorData.conversion_factor !== null &&
+    factorData.conversion_factor !== undefined
+      ? Number(factorData.conversion_factor)
+      : 1;
+
+  const displayUnit =
+    factorData && factorData.conversion_unit
+      ? factorData.conversion_unit.split('/')[0]
+      : parameter?.unit ?? '';
+
   const monthlyRows = useMemo(() => {
     return months.map((name, index) => {
       const monthNumber = index + 1;
@@ -189,20 +207,23 @@ export function DataPage({ slug }: { slug: string }) {
       const quantity =
         row === undefined ? null : Number(row.quantity);
 
+      const converted =
+        quantity !== null ? quantity * conversionFactor : null;
+
       const factor = factorData ? Number(factorData.factor) : null;
 
       const emission =
-        quantity !== null && factor !== null
-          ? (quantity * factor) / 1000
+        converted !== null && factor !== null
+          ? (converted * factor) / 1000
           : null;
 
       return {
         month: name,
-        quantity,
+        quantity: converted,
         emission,
       };
     });
-  }, [yearRows, selectedLocation, factorData]);
+  }, [yearRows, selectedLocation, factorData, conversionFactor]);
 
   /*
    * One line per year for the monthly trend chart,
@@ -219,10 +240,12 @@ export function DataPage({ slug }: { slug: string }) {
             r.location === selectedLocation
         );
 
-        return row === undefined ? null : Number(row.quantity);
+        return row === undefined
+          ? null
+          : Number(row.quantity) * conversionFactor;
       }),
     }));
-  }, [allRows, selectedLocation]);
+  }, [allRows, selectedLocation, conversionFactor]);
 
   const visibleSeries = chartSeries.filter(
     (seriesItem) => !hiddenYears.has(Number(seriesItem.label))
@@ -357,12 +380,13 @@ export function DataPage({ slug }: { slug: string }) {
             {loading
               ? '—'
               : total.toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 3,
+                  maximumFractionDigits: 3,
                 })}
           </div>
 
           <div className="kpi-bottom">
-            <div className="kpi-sub">{parameter.unit}</div>
+            <div className="kpi-sub">{displayUnit}</div>
           </div>
         </div>
 
@@ -375,7 +399,7 @@ export function DataPage({ slug }: { slug: string }) {
           </div>
 
           <div className="kpi-value">
-            {loading ? '—' : emission.toFixed(2)}
+            {loading ? '—' : emission.toFixed(3)}
           </div>
 
           <div className="kpi-bottom">
@@ -531,7 +555,7 @@ export function DataPage({ slug }: { slug: string }) {
         onToggleYear={toggleYear}
         onResetYears={() => setHiddenYears(new Set())}
       >
-        <BarChart labels={months} series={visibleSeries} height={320} xLabel="Month" yLabel={parameter.unit} />
+        <BarChart labels={months} series={visibleSeries} height={320} xLabel="Month" yLabel={displayUnit} />
       </ChartCard>
 
       <section className="section card">
@@ -570,11 +594,12 @@ export function DataPage({ slug }: { slug: string }) {
                   {row.quantity === null
                     ? '—'
                     : row.quantity.toLocaleString(undefined, {
+                        minimumFractionDigits: 3,
                         maximumFractionDigits: 3,
                       })}
                 </td>
 
-                <td>{parameter.unit}</td>
+                <td>{displayUnit}</td>
 
                 <td className="num">
                   {row.emission === null

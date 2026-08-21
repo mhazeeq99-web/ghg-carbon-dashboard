@@ -40,6 +40,8 @@ export async function GET(request: NextRequest) {
         p.name,
         p.scope,
         p.input_unit,
+        p.conversion_factor,
+        p.conversion_unit,
         ef.factor,
         ef.factor_unit,
         l.name AS location,
@@ -71,13 +73,28 @@ export async function GET(request: NextRequest) {
     for (const row of result.rows) {
       const key = `${row.year}:${row.slug}:${row.location}`;
 
+      /*
+       * LPG cylinder parameters store activity in cylinders; convert to the
+       * derived unit (e.g. kg) before any emission calculation.
+       */
+      const conversion =
+        row.conversion_factor !== null &&
+        row.conversion_factor !== undefined
+          ? Number(row.conversion_factor)
+          : 1;
+
+      const displayUnit =
+        row.conversion_unit
+          ? String(row.conversion_unit).split('/')[0]
+          : row.input_unit;
+
       if (!grouped.has(key)) {
         grouped.set(key, {
           year: Number(row.year),
           slug: row.slug,
           name: row.name,
           scope: row.scope,
-          input_unit: row.input_unit,
+          input_unit: displayUnit,
           factor: row.factor !== null ? Number(row.factor) : null,
           factor_unit: row.factor_unit,
           location: row.location,
@@ -87,7 +104,7 @@ export async function GET(request: NextRequest) {
 
       const groupedItem = grouped.get(key)!;
       groupedItem.monthly[Number(row.month) - 1] =
-        Number(row.quantity);
+        Number(row.quantity) * conversion;
     }
 
     const items = Array.from(grouped.values());

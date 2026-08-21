@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { niceCeil, seriesColor, formatCompact } from '@/lib/chart';
+import { plotMaxFor, seriesColor, formatCompact } from '@/lib/chart';
 
 type Series = {
   label: string;
@@ -83,7 +83,7 @@ export function LineChart({
   );
 
   const rawMax = Math.max(...allValues, 0);
-  const max = niceCeil(rawMax);
+  const max = plotMaxFor(rawMax);
   const min = 0;
 
   const width = 1000;

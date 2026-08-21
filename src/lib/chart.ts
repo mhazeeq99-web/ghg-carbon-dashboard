@@ -28,6 +28,18 @@ export function niceCeil(value: number) {
   return nice * base;
 }
 
+/**
+ * Y-axis domain top so the highest value sits ~8% below the top of the
+ * plotting area (within the 5-10% target), rounded to 2 significant
+ * figures so the ticks stay readable. Adapts to every chart's data.
+ */
+export function plotMaxFor(value: number) {
+  if (!Number.isFinite(value) || value <= 0) return 1;
+  const target = value / 0.92;
+  const exp = Math.pow(10, Math.floor(Math.log10(target)) - 1);
+  return Math.round(target / exp) * exp;
+}
+
 /** Compact axis labels: 1.2M / 340K / 86 / 3.5 */
 export function formatCompact(value: number) {
   if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;

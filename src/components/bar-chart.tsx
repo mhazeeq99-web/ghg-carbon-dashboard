@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { niceCeil, seriesColor, formatCompact } from '@/lib/chart';
+import { plotMaxFor, seriesColor, formatCompact } from '@/lib/chart';
 
 type BarSeries = {
   label: string;
@@ -70,7 +70,7 @@ export function BarChart({
     ? Math.max(...groupTotals, 0)
     : Math.max(...allValues, 0);
 
-  const max = niceCeil(maxSource);
+  const max = plotMaxFor(maxSource);
   const min = 0;
 
   const width = 1000;
