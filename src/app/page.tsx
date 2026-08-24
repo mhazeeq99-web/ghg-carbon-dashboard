@@ -206,7 +206,7 @@ export default function Dashboard() {
       <div className="grid grid3">
         <div className="card kpi">
           <div className="kpi-top">
-            <div className="kpi-label">Total footprint</div>
+            <div className="kpi-label">Total carbon footprint</div>
             <span className="kpi-icon">
               <Leaf size={16} />
             </span>
@@ -449,7 +449,7 @@ export default function Dashboard() {
                   </span>
                 </td>
                 <td />
-                <td />
+                <td>tCO₂e</td>
                 <td />
                 <td className="num">
                   <strong>
@@ -468,7 +468,7 @@ export default function Dashboard() {
                   </span>
                 </td>
                 <td />
-                <td />
+                <td>tCO₂e</td>
                 <td />
                 <td className="num">
                   <strong>
@@ -487,7 +487,7 @@ export default function Dashboard() {
                   </span>
                 </td>
                 <td />
-                <td />
+                <td>tCO₂e</td>
                 <td />
                 <td className="num">
                   <strong>
