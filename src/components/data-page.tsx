@@ -608,6 +608,28 @@ export function DataPage({ slug }: { slug: string }) {
                 </td>
               </tr>
             ))}
+
+            <tr className="row-total">
+              <td>
+                <strong>Total</strong>
+              </td>
+              <td>—</td>
+
+              <td className="num">
+                <strong>
+                  {total.toLocaleString(undefined, {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3,
+                  })}
+                </strong>
+              </td>
+
+              <td>{displayUnit}</td>
+
+              <td className="num">
+                <strong>{emission.toFixed(3)} tCO₂e</strong>
+              </td>
+            </tr>
           </tbody>
         </table>
       </section>
