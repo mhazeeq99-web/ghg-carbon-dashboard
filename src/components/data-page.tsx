@@ -12,6 +12,7 @@ import {
 import { months, years, parameters } from '@/lib/ghg';
 import { BarChart } from './bar-chart';
 import { ChartCard } from './chart-card';
+import { ComboChart } from './combo-chart';
 
 type ActivityRow = {
   id: string;
@@ -55,6 +56,12 @@ export function DataPage({ slug }: { slug: string }) {
   const [syncing, setSyncing] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [hiddenYears, setHiddenYears] = useState<Set<number>>(new Set());
+
+  // Electricity activity, loaded only on the Solar page for the combo chart
+  const [elecRows, setElecRows] = useState<ActivityRow[]>([]);
+  const [comboLocation, setComboLocation] = useState('Tago');
+  const [comboYearA, setComboYearA] = useState(2025);
+  const [comboYearB, setComboYearB] = useState(2026);
 
   const refreshData = useCallback(async () => {
     if (!parameter) return;
@@ -122,6 +129,30 @@ export function DataPage({ slug }: { slug: string }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshData();
   }, [refreshData]);
+
+  useEffect(() => {
+    if (slug !== 'solar') return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const response = await fetch('/api/activity?slug=electricity', {
+          cache: 'no-store',
+        });
+        const result = await response.json();
+        if (!cancelled && response.ok) {
+          setElecRows(result.data ?? []);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
 
   async function syncSolar() {
     if (parameter?.slug !== 'solar') return;
@@ -250,6 +281,26 @@ export function DataPage({ slug }: { slug: string }) {
   const visibleSeries = chartSeries.filter(
     (seriesItem) => !hiddenYears.has(Number(seriesItem.label))
   );
+
+  const monthValues = (rows: ActivityRow[], loc: string, yr: number) =>
+    months.map((_, index) => {
+      const row = rows.find(
+        (r) =>
+          r.location === loc &&
+          r.year === yr &&
+          r.month === index + 1
+      );
+      return row === undefined ? null : Number(row.quantity);
+    });
+
+  const comboBarSeries = [comboYearA, comboYearB].map((yr) => ({
+    label: String(yr),
+    values: monthValues(elecRows, comboLocation, yr),
+  }));
+  const comboLineSeries = [comboYearA, comboYearB].map((yr) => ({
+    label: String(yr),
+    values: monthValues(allRows, comboLocation, yr),
+  }));
 
   const total = monthlyRows.reduce(
     (sum, row) => sum + (row.quantity ?? 0),
@@ -505,7 +556,13 @@ export function DataPage({ slug }: { slug: string }) {
           </div>
 
           <div className="field">
-            <label>Quantity ({parameter.unit})</label>
+            <label>
+                Quantity{' '}
+                {parameter.slug === 'lpg-14kg' ||
+                parameter.slug === 'lpg-50kg'
+                  ? '(units)'
+                  : `(${parameter.unit})`}
+              </label>
 
             <input
               className="input"
@@ -557,6 +614,69 @@ export function DataPage({ slug }: { slug: string }) {
       >
         <BarChart labels={months} series={visibleSeries} height={320} xLabel="Month" yLabel={displayUnit} />
       </ChartCard>
+
+      {parameter.slug === 'solar' && (
+        <section className="section card">
+          <div
+            className="toolbar"
+            style={{ marginBottom: 14, justifyContent: 'center' }}
+          >
+            <div className="segmented">
+              {['Tago', 'KIP'].map((loc) => (
+                <button
+                  key={loc}
+                  className={comboLocation === loc ? 'active' : ''}
+                  onClick={() => setComboLocation(loc)}
+                >
+                  {loc}
+                </button>
+              ))}
+            </div>
+
+            <select
+              className="select"
+              style={{ width: 110 }}
+              value={comboYearA}
+              onChange={(e) => setComboYearA(Number(e.target.value))}
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="select"
+              style={{ width: 110 }}
+              value={comboYearB}
+              onChange={(e) => setComboYearB(Number(e.target.value))}
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="chart-head">
+            <div className="section-title">
+              Electricity vs Solar · {comboLocation}
+            </div>
+          </div>
+
+          <ComboChart
+            labels={months}
+            barSeries={comboBarSeries}
+            lineSeries={comboLineSeries}
+            barAxisLabel="Electricity (kWh)"
+            lineAxisLabel="Solar (kWh)"
+            height={320}
+            xLabel="Month"
+          />
+        </section>
+      )}
 
       <section className="section card">
         <div className="section-head">
