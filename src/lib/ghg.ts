@@ -1,5 +1,22 @@
 export const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-export const years=[2022,2023,2024,2025,2026];
+const FIRST_YEAR = 2022;
+
+/**
+ * Years run from the first data year up to the current calendar year,
+ * so the dropdowns/selects automatically include (e.g.) 2027 when the
+ * year arrives and no longer need a manual update.
+ */
+function buildYears(): number[] {
+  const list: number[] = [];
+  const end = Math.max(new Date().getFullYear(), FIRST_YEAR);
+
+  for (let y = FIRST_YEAR; y <= end; y++) list.push(y);
+
+  return list;
+}
+
+export const years = buildYears();
+export const currentYear = years[years.length - 1];
 export const parameters=[
  {scope:'Scope 1',slug:'lpg-14kg',name:'LPG 14kg',unit:'kg',factor:0.003},
  {scope:'Scope 1',slug:'lpg-50kg',name:'LPG 50kg',unit:'kg',factor:0.003},

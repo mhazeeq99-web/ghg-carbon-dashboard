@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
-const YEARS = [2022, 2023, 2024, 2025, 2026];
+function buildYears(): number[] {
+  const end = Math.max(new Date().getFullYear(), 2022);
+  const list: number[] = [];
+
+  for (let y = 2022; y <= end; y++) list.push(y);
+
+  return list;
+}
+
+const YEARS = buildYears();
 
 type GroupedItem = {
   year: number;

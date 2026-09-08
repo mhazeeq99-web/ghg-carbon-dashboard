@@ -63,7 +63,7 @@ type DashboardData = {
 };
 
 export default function Dashboard() {
-  const [year, setYear] = useState(2026);
+  const [year, setYear] = useState(years[years.length - 1]);
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [hiddenYears, setHiddenYears] = useState<Set<number>>(new Set());
