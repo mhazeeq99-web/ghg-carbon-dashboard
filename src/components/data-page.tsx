@@ -41,12 +41,29 @@ type Notice = {
   kind: 'ok' | 'error';
 };
 
+function previousMonthDefaults() {
+  const now = new Date();
+  let month = now.getMonth() - 1; // 0-based previous month
+  let year = now.getFullYear();
+
+  if (month < 0) {
+    month = 11; // December of the previous year
+    year -= 1;
+  }
+
+  const y = years.includes(year) ? year : years[years.length - 1];
+
+  return { year: y, month: month + 1 };
+}
+
 export function DataPage({ slug }: { slug: string }) {
   const parameter = parameters.find((p) => p.slug === slug);
 
-  const [year, setYear] = useState(2026);
+  const initialDefaults = previousMonthDefaults();
+
+  const [year, setYear] = useState(initialDefaults.year);
   const [location, setLocation] = useState('');
-  const [month, setMonth] = useState(1);
+  const [month, setMonth] = useState(initialDefaults.month);
   const [value, setValue] = useState('');
   const [allRows, setAllRows] = useState<ActivityRow[]>([]);
   const [factorData, setFactorData] = useState<FactorData | null>(null);
@@ -54,6 +71,12 @@ export function DataPage({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [confirm, setConfirm] = useState<null | {
+    year: number;
+    month: number;
+    location: string;
+    quantity: number;
+  }>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [hiddenYears, setHiddenYears] = useState<Set<number>>(new Set());
 
@@ -361,12 +384,15 @@ export function DataPage({ slug }: { slug: string }) {
       }
 
       setValue('');
-      setNotice({
-        text: 'Data saved successfully.',
-        kind: 'ok',
-      });
 
       await refreshData();
+
+      setConfirm({
+        year,
+        month,
+        location: selectedLocation,
+        quantity,
+      });
     } catch (error) {
       console.error(error);
 
@@ -753,6 +779,56 @@ export function DataPage({ slug }: { slug: string }) {
           </tbody>
         </table>
       </section>
+
+      {confirm && (
+        <div
+          className="modal-overlay"
+          onClick={() => setConfirm(null)}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CheckCircle2 size={34} className="modal-icon" />
+
+            <h2 className="modal-title">Data saved</h2>
+            <p className="modal-sub">
+              Your entry has been recorded successfully.
+            </p>
+
+            <div className="modal-details">
+              <div>
+                <span>Parameter</span>
+                <strong>{parameter.name}</strong>
+              </div>
+              <div>
+                <span>Location</span>
+                <strong>{confirm.location}</strong>
+              </div>
+              <div>
+                <span>Period</span>
+                <strong>
+                  {months[confirm.month - 1]} {confirm.year}
+                </strong>
+              </div>
+              <div>
+                <span>Quantity</span>
+                <strong>
+                  {confirm.quantity} {displayUnit}
+                </strong>
+              </div>
+            </div>
+
+            <button
+              className="btn"
+              style={{ width: '100%' }}
+              onClick={() => setConfirm(null)}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
