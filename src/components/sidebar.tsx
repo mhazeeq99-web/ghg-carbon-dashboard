@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Database,
@@ -9,6 +10,7 @@ import {
   PlugZap,
   Leaf,
   Sun,
+  LogOut,
 } from 'lucide-react';
 
 const scope1Links = [
@@ -20,6 +22,18 @@ const scope1Links = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function logout() {
+    setLoggingOut(true);
+    try {
+      await fetch('/api/logout', { method: 'POST' });
+    } catch {
+      /* ignore */
+    }
+    router.replace('/login');
+  }
 
   const isActive = (href: string) =>
     href === '/'
@@ -106,6 +120,15 @@ export function Sidebar() {
         <span className="status-dot" />
         Neon PostgreSQL · Connected
       </div>
+
+      <button
+        className="logout-btn"
+        onClick={logout}
+        disabled={loggingOut}
+      >
+        <LogOut size={14} />
+        {loggingOut ? 'Logging out…' : 'Log out'}
+      </button>
     </aside>
   );
 }

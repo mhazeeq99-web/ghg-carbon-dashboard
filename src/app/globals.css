@@ -1085,3 +1085,107 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* ------------------------------------------------------------
+   Login page
+   ------------------------------------------------------------ */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(
+      1200px 600px at 20% -10%,
+      #0e3a2e 0%,
+      #0a241c 55%,
+      #071a14 100%
+    );
+}
+
+.login-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.login-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin: 0 auto 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+
+.login-sub {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+
+.login-input {
+  width: 100%;
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 14px;
+  padding: 12px 10px 12px 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+.login-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.14);
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.logout-btn {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #a8c6bb;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.3);
+}
