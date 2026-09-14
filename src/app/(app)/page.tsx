@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { LineChart } from '@/components/line-chart';
 import { ChartCard } from '@/components/chart-card';
-import { BarChart } from '@/components/bar-chart';
+import { HorizontalBarChart } from '@/components/horizontal-bar-chart';
 import { parameters, years } from '@/lib/ghg';
 
 type GraphSeries = {
@@ -131,6 +131,9 @@ export default function Dashboard() {
   const visibleTrends = (data?.graphs.trends ?? []).filter(
     (item) => !hiddenYears.has(item.year)
   );
+
+  // Newest year first so 2026 sits at the top of the horizontal chart.
+  const descendingTrends = [...visibleTrends].reverse();
 
   /*
    * ------------------------------------------------------------
@@ -342,24 +345,27 @@ export default function Dashboard() {
           <div className="skeleton skeleton-chart" />
         ) : (
           data && (
-            <BarChart
-              labels={visibleTrends.map((item) =>
+            <HorizontalBarChart
+              labels={descendingTrends.map((item) =>
                 String(item.year)
               )}
               series={[
                 {
                   label: 'Scope 1',
-                  values: visibleTrends.map((item) => item.scope1),
+                  values: descendingTrends.map(
+                    (item) => item.scope1
+                  ),
                 },
                 {
                   label: 'Scope 2',
-                  values: visibleTrends.map((item) => item.scope2),
+                  values: descendingTrends.map(
+                    (item) => item.scope2
+                  ),
                 },
               ]}
               height={320}
-              stacked
-              xLabel="Year"
-              yLabel="tCO₂e"
+              xLabel="tCO₂e"
+              yLabel="Year"
             />
           )
         )}
