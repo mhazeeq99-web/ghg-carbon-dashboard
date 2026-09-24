@@ -8,9 +8,10 @@ export default function AppLayout({
 }) {
   return (
     <div className="shell">
-      <SessionGuard />
-      <Sidebar />
-      <main className="main">{children}</main>
+      <SessionGuard>
+        <Sidebar />
+        <main className="main">{children}</main>
+      </SessionGuard>
     </div>
   );
 }
