@@ -1,4 +1,5 @@
 import { Sidebar } from '@/components/sidebar';
+import { SessionGuard } from '@/components/session-guard';
 
 export default function AppLayout({
   children,
@@ -7,6 +8,7 @@ export default function AppLayout({
 }) {
   return (
     <div className="shell">
+      <SessionGuard />
       <Sidebar />
       <main className="main">{children}</main>
     </div>

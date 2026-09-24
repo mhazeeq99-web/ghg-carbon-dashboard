@@ -33,6 +33,8 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
+        // Per-tab flag: cleared automatically when this tab is closed.
+        sessionStorage.setItem('ghg_session', '1');
         setNotice({ text: 'Welcome.', kind: 'ok' });
         router.replace('/');
         return;
@@ -68,9 +70,18 @@ export default function LoginPage() {
           ref={inputRef}
           className="login-input"
           type="password"
+          name="access-code"
           inputMode="numeric"
-          autoComplete="off"
+          autoComplete="one-time-code"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           maxLength={4}
+          data-lpignore="true"
+          data-1p-ignore="true"
+          data-bwignore="true"
+          data-protonpass-ignore="true"
+          data-form-type="other"
           value={pin}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => {

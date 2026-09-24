@@ -27,11 +27,15 @@ export function Sidebar() {
 
   async function logout() {
     setLoggingOut(true);
+
+    sessionStorage.removeItem('ghg_session');
+
     try {
       await fetch('/api/logout', { method: 'POST' });
     } catch {
       /* ignore */
     }
+
     router.replace('/login');
   }
 
