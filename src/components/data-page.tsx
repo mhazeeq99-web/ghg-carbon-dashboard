@@ -248,6 +248,16 @@ export function DataPage({ slug }: { slug: string }) {
       ? factorData.conversion_unit.split('/')[0]
       : parameter?.unit ?? '';
 
+  /*
+   * Unit the user actually types in the form / appears in the confirmation.
+   * Cylinder parameters are entered as "units" and converted to kg for storage
+   * and reporting.
+   */
+  const inputUnit =
+    parameter?.slug === 'lpg-14kg' || parameter?.slug === 'lpg-50kg'
+      ? 'units'
+      : parameter?.unit ?? '';
+
   const monthlyRows = useMemo(() => {
     return months.map((name, index) => {
       const monthNumber = index + 1;
@@ -583,11 +593,7 @@ export function DataPage({ slug }: { slug: string }) {
 
           <div className="field">
             <label>
-                Quantity{' '}
-                {parameter.slug === 'lpg-14kg' ||
-                parameter.slug === 'lpg-50kg'
-                  ? '(units)'
-                  : `(${parameter.unit})`}
+                Quantity ({inputUnit})
               </label>
 
             <input
@@ -814,7 +820,7 @@ export function DataPage({ slug }: { slug: string }) {
               <div>
                 <span>Quantity</span>
                 <strong>
-                  {confirm.quantity} {displayUnit}
+                  {confirm.quantity} {inputUnit}
                 </strong>
               </div>
             </div>
